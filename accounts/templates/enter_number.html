@@ -1,0 +1,40 @@
+{% extends "_base.html" %}
+
+
+{% block page_title %}
+دریافت شماره همراه
+{% endblock page_title %}
+
+
+{% block content %}
+<div style="display: flex; flex-direction: column; justify-content: center; height: 95vh;">
+<div class="container shadow-lg p-5 w justify-content-center" style="border-radius: 24px;">
+    <form action="{% url 'login' %}" method="get">
+        {% csrf_token %}
+        <h1 style="text-align: center;" class="justify-content-center mb-5 c em3">
+            ورود/ثبت نام
+        </h1>
+        <div class="d-flex flex-row justify-content-center">
+            <input style="text-align: center;" type="tel" name="phone_number" class="form-control w-50" id="phone_number" aria-describedby="phone_number" placeholder="09xxxxxxxx" pattern="09[0-9]{9}" required>
+        </div>
+        <div class="d-flex flex-row justify-content-center my-4">
+            <div class="form-check">
+                <label class="form-check-label c em1-4" for="otp_type1">
+                    پیام متنی
+                </label>
+                <input style="accent-color: green" type="radio" name="otp_type" value="sms" id="otp_type1" checked>
+              </div>
+            <div class="form-check">
+                <label class="form-check-label c em1-4" for="otp_type2">
+                    پیام صوتی
+                </label>
+                <input style="accent-color: green" type="radio" name="otp_type" value="voice" id="otp_type2" >
+            </div>
+        </div>
+        <div class="d-flex flex-row justify-content-center">
+            <button type="submit" class="btn btn-outline-success rounded-pill d-flex w-50 justify-content-center">ارسال</button>
+        </div>
+    </form>
+</div>
+</div>
+{% endblock content %}

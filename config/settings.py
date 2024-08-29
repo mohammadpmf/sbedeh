@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'jalali_date',
+    'django_madval',
 
     'accounts',
     'reminder',
@@ -141,7 +142,8 @@ LANGUAGE_CODE = 'en-us'
 LANGUAGE_CODE = 'fa'
 
 TIME_ZONE = 'UTC'
-TIME_ZONE = 'Asia/Tehran'
+# TIME_ZONE = 'Asia/Tehran' # وقتی جلالی رو اضافه کردم تو پنل خودش به خاطر تابعی که نوشته
+# بودم کم میکرد. اما حواسم باشه شاید تو سایت این طوری نباشه. دقت کنم.
 
 USE_I18N = True
 

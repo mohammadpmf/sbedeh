@@ -1,0 +1,72 @@
+{% extends "_base.html" %}
+
+
+{% block page_title %}
+ورود/ ثبت نام با یکبار رمز
+{% endblock page_title %}
+
+
+{% block content %}
+<div style="display: flex; flex-direction: column; justify-content: center; height: 95vh;">
+    <div class="container shadow-lg p-5 w justify-content-center" style="border-radius: 24px;">
+        <form action="{% url 'login' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="phone_number" value="{{ phone_number }}">
+            <h1 style="text-align: center;" class="justify-content-center mb-4 c em1-8">
+                لطفا کد ارسال شده را در کادر زیر وارد کنید
+            </h1>
+            <input style="text-align: center;" type="text" name="otp" class="form-control w-50 m-auto" id="otp" aria-describedby="otp" required>
+            <div class="d-flex flex-row justify-content-center mt-3">
+                <button type="submit" class="btn btn-outline-success rounded-pill d-flex w-50 justify-content-center">ارسال</button>
+            </div>
+        </form>
+        <div dir="ltr" class="d-flex justify-content-center mt-5">
+            <div class="progress rounded-pill w-75">
+                <div id="madval-timer" class="bg-success progress-bar progress-bar-striped progress-bar-animated rounded-pill" role="progressbar" aria-valuenow="120" aria-valuemin="0" aria-valuemax="120" style="width: 100%">120s</div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var startTime = Date.now();
+    var duration = 120000; // 120 seconds in milliseconds
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    async function timer() {
+        var p_bar = document.getElementById("madval-timer");
+        while (true) {
+            var elapsed = Date.now() - startTime;
+            var remainingTime = Math.max(0, duration - elapsed);
+            var time = remainingTime / 1000; // Convert to seconds
+
+            p_bar.style.width = (time / 120) * 100 + "%";
+            p_bar.innerHTML = Math.round(remainingTime/1000) + "s";
+
+            if (time > 80) {
+                p_bar.classList.add("bg-success");
+                p_bar.classList.remove("bg-info", "bg-warning", "bg-danger");
+            } else if (time > 40) {
+                p_bar.classList.add("bg-info");
+                p_bar.classList.remove("bg-success", "bg-warning", "bg-danger");
+            } else if (time > 10) {
+                p_bar.classList.add("bg-warning");
+                p_bar.classList.remove("bg-success", "bg-info", "bg-danger");
+            } else {
+                p_bar.classList.add("bg-danger");
+                p_bar.classList.remove("bg-success", "bg-info", "bg-warning");
+            }
+            if (remainingTime <= 0) {
+                break;
+            }
+            await sleep(100);
+        }
+        await sleep(1000);
+        document.location.href = "{% url 'enter_number' %}";
+    }
+    timer();
+</script>
+{% endblock content %}
+            
+            
