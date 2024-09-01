@@ -70,8 +70,9 @@ def sbedeh(phone_number, message, timeout_counter=0):
 
 
 def tbedeh(chat_id, message):
+    global bot
     try:
-        bot = telebot.TeleBot(MY_TELEGRAM_BOT_API_TOKEN)
+        # bot = telebot.TeleBot(MY_TELEGRAM_BOT_API_TOKEN)
         bot.send_message(chat_id, message)
         print('message sent successfully to', chat_id)
     except telebot.apihelper.ApiTelegramException as error:
@@ -89,8 +90,10 @@ def handle_reminder(reminder: Reminder):
     # if reminder.sms:
     #     Thread(target=sbedeh, args=(phone_number, message+'\nلغو ۱۱'), daemon=True).start()
     if reminder.telegram: # فیلتر شکن باید روشن باشه
+        print(reminder.user.telegram_chat_id)
         Thread(target=tbedeh, args=(reminder.user.telegram_chat_id, message), daemon=True).start()
         
+
 
 def should_check(now: datetime, reminder_time: datetime):
     '''
@@ -103,11 +106,43 @@ def should_check(now: datetime, reminder_time: datetime):
     if now<reminder_time:
         return False
     return True
-    
+    # اگه کار کرد همه این پایینیا رو میتونم پاک کنم.
+    if now.year<reminder_time.year:
+        return False
+    elif now.year>reminder_time.year:
+        return True
+    # اگه هیچ کودوم نبود سالشون مساویه
+    if now.month<reminder_time.month:
+        return False
+    elif now.month>reminder_time.month:
+        return True
+    # اگه هیچ کودوم نبود ماهشون مساویه
+    if now.day<reminder_time.day:
+        return False
+    elif now.day>reminder_time.day:
+        return True
+    # اگه هیچ کودوم نبود روزشون مساویه
+    if now.hour<reminder_time.hour:
+        return False
+    elif now.hour>reminder_time.hour:
+        return True
+    # اگه هیچ کودوم نبود ساعتشون مساویه
+    if now.minute<reminder_time.minute:
+        return False
+    elif now.minute>reminder_time.minute:
+        return True
+    # اگه هیچ کودوم نبود دقیقه شون مساویه
+    # ثانیه هم لازم نیست چک کنیم. چون ۶۰ ثانیه یه بار داره رفرش میشه.
+    # تو همین دقیقه اولین باری هست که یه ریمایندر اتفاق افتاده و باید
+    # انجامش بدیم.
+    return True
+    # تو حالت های قبلی که ترو برمیگردوندیم، الان اتفاق نیفتاده. اما
+    # از قبل شروع شده و باید بررسی کنیک که موعد تکرارش رسیده یا نه.
+
 
 def should_i(now: datetime, start_datetime: datetime, period: str):
     '''
-    تابعی که بررسی میکنه که آیا در این دقیقه زمان ارسال پیام به کاربر رسیده یا نه
+    تابعی که بررسی میکنه که آیا الان زمان ارسال پیام به کاربر رسیده یا نه
     '''
     difference = now - start_datetime # اول قدر مطلق گرفتم. ولی لازم نیست. چون قبلش یه مرحله چک کردیم
     difference_in_minutes = difference.seconds // MINUTE
@@ -222,4 +257,6 @@ def activate_telegram_bot():
                             "با تشکر\n www.sbedeh.ir" %(number, chat_id))
     bot.infinity_polling()
 
+
+Thread(target=activate_telegram_bot, daemon=True).start()
 Thread(target=send_sms_to_people, daemon=True).start()
