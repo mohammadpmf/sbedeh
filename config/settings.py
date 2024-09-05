@@ -12,10 +12,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from pathlib import Path
-import environ
+from environs import Env
 
-env = environ.Env()
-environ.Env.read_env()
+env = Env()
+env.read_env()
 from .madval1369_secret import *
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
