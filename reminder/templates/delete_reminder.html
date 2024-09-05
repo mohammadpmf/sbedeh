@@ -1,0 +1,24 @@
+{% extends "_base.html" %}
+
+{% block page_title %}
+حذف یادآوری
+{% endblock page_title %}
+
+{% block content %}
+<div class='container-lg shadow mt-5 p-5 c'>
+    <h1>
+        از حذف یادآوری
+        <span class="text-info">"{{ reminder.title }}"</span>
+        مطمئنید؟ می توانید از قسمت
+        <a class="text-decoration-none" href="{% url 'update_reminder' reminder.pk %}">ویرایش</a>،
+        وضعیت آن را به غیر فعال تغییر دهید تا برای شما یادآوری ارسال نشود و در صورت نیاز
+        دوباره آن را فعال کنید.
+    </h1>
+    <a class="btn btn-warning mx-2" href="{% url 'update_reminder' reminder.pk %}">ویرایش {{ reminder.title }}</a>
+    <a class="btn btn-secondary mx-2" onclick="window.history.back()">بازگشت به صفحه قبل</a>
+    <form class="d-inline-block mx-2 mt-4" action="" method="post">
+        {% csrf_token %}
+        <input class="btn btn-danger" type="submit" value="مطمئنم. حذف شود">
+    </form>
+</div>
+{% endblock content %}

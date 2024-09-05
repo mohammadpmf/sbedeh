@@ -1,0 +1,54 @@
+{% extends "_base.html" %}
+
+{% load jalali_tags %}
+{% load madval_persian_translation %}
+
+{% block page_title %}
+تمام یادآوری ها
+{% endblock page_title %}
+
+
+{% block content %}
+<div class="container-lg scrollmenu">
+    <table class="table table-lg table-hover table-dark mt-3">
+        <tr>
+            <th rowspan="2" style="width: 25%">عنوان</th>
+            <th rowspan="2" style="width: 25%">تاریخ و زمان شروع</th>
+            <th rowspan="2" style="width: 15%">دوره یادآوری</th>
+            <th rowspan="2" style="width: 5%">فعال</th>
+            <th colspan="7" style="width: 20%">ارسال پیغام از طریق</th>
+            <th rowspan="2" style="width: 5%">ویرایش</th>
+            <th rowspan="2" style="width: 5%">حذف</th>
+        </tr>
+        <tr>
+            <th style="width: 3%">sms</th>
+            <th style="width: 3%">email</th>
+            <th style="width: 3%">telegram</th>
+            <th style="width: 3%">whatsapp</th>
+            <th style="width: 3%">notification</th>
+            <th style="width: 3%">eta</th>
+            <th style="width: 3%">bale</th>
+        </tr>
+        {% for reminder in reminders %}
+        <tr class="table-info">
+            <td><a href="{% url 'update_reminder' reminder.pk %}" class="text-decoration-none text-dark">{{ reminder.title }}</a></td>
+            <td><a href="{% url 'update_reminder' reminder.pk %}" class="text-decoration-none text-dark">{{ reminder.start_datetime|to_jalali:'%Y/%m/%d ساعت %H:%M'|pn }}</a></td>
+            <td><a href="{% url 'update_reminder' reminder.pk %}" class="text-decoration-none text-dark">{{ reminder.get_period_display }}</a></td>
+            <td>{{ reminder.form.active }}</td>
+            <td>{{ reminder.form.sms }}</td>
+            <td>{{ reminder.form.email }}</td>
+            <td>{{ reminder.form.telegram }}</td>
+            <td>{{ reminder.form.whatsapp }}</td>
+            <td>{{ reminder.form.notification }}</td>
+            <td>{{ reminder.form.eta }}</td>
+            <td>{{ reminder.form.bale }}</td>
+            <td><a href="{% url 'update_reminder' reminder.pk %}" class="btn btn-sm btn-warning">ویرایش</a></td>
+            <td><a href="{% url 'delete_reminder' reminder.pk %}" class="btn btn-sm btn-danger">حذف</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock content %}
+
+
+{% block active_all_reminders %}active{% endblock active_all_reminders %}

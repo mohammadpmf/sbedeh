@@ -1,0 +1,28 @@
+
+{% extends "_base.html" %}
+
+
+{% block page_title %}
+ثبت/تغییر آدرس ایمیل
+{% endblock page_title %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; justify-content: center; height: 95vh;">
+    <div class="container shadow-lg p-5 w justify-content-center" style="border-radius: 24px;">
+        <form action="" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="phone_number" value="{{ phone_number }}">
+            <h1 style="text-align: center;" class="justify-content-center mb-4 c em1-8">
+                لطفا آدرس ایمیل خود را وارد کنید
+            </h1>
+            <input style="text-align: center;" type="email" name="email" class="form-control w-75 m-auto" id="email" aria-describedby="email" required value="{{ user.email }}">
+            <div class="d-flex flex-row justify-content-center mt-3">
+                <button type="submit" class="btn btn-outline-success rounded-pill d-flex w-50 justify-content-center">ارسال</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}
+
+
+{% block active_email %}active{% endblock active_email %}

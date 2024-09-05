@@ -1,0 +1,37 @@
+{% extends "_base.html" %}
+
+{% load static %}
+
+{% load jalali_tags %}
+{% load crispy_forms_tags %}
+
+{% block page_title %}
+ویرایش یادآوری {{ reminder.title }}
+{% endblock page_title %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'admin/css/dark_mode.css' %}">
+<link rel="stylesheet" href="{% static 'admin/css/nav_sidebar.css' %}">
+<script src="{% static 'admin/js/nav_sidebar.js' %}" defer></script>
+<link rel="stylesheet" href="{% static 'admin/css/forms.css' %}">
+<link rel="stylesheet" href="{% static 'admin/css/rtl.css' %}">
+<link href="{% static 'admin/jquery.ui.datepicker.jalali/themes/base/jquery-ui.min.css' %}" media="all" rel="stylesheet">
+<script src="{% static 'admin/js/django_jalali.min.js' %}"></script>
+{% endblock extra_css %}
+
+
+{% block content %}
+<div class='container-lg shadow mt-5 p-5 c'>
+    <form action="" method="post">
+        {% csrf_token %}
+        <label class="required mx-2">تاریخ شروع یادآوری*</label>
+            تاریخ:
+                <input type="text" name="date" class="jalali_date-date mx-1" size="10" required id="date" placeholder="1403-06-06" value="{{ reminder.start_datetime.date|to_jalali:'%Y-%m-%d' }}">
+            زمان:
+                <input type="text" name="time" class="vTimeField mx-1" size="8" required id="time" placeholder="مثلا 18:30" value="{{ reminder.start_datetime.time }}">
+        {{ form|crispy }}
+        <button class="btn btn-warning px-3" type="submit">یادآوری {{ reminder.title }} را ویرایش کن</button>
+        <a class="btn btn-secondary mx-2" onclick="window.history.back()">بازگشت به صفحه قبل</a>
+    </form>
+</div>
+{% endblock content %}

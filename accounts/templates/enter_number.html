@@ -5,6 +5,9 @@
 دریافت شماره همراه
 {% endblock page_title %}
 
+{% block optional_content %}
+{% comment %} میخوام اینجا خالی باشه و نشون نده. {% endcomment %}
+{% endblock optional_content %}
 
 {% block content %}
 <div style="display: flex; flex-direction: column; justify-content: center; height: 95vh;">
@@ -31,10 +34,19 @@
                 <input style="accent-color: green" type="radio" name="otp_type" value="voice" id="otp_type2" >
             </div>
         </div>
+        <div class="d-flex flex-row justify-content-center my-4 px-5">
+            <input style="accent-color: green; height: 2em; width: 2em;" type="checkbox" name="rules" checked>
+            <a href="{% url 'rules' %}" class="d-inline-block mx-1 text-decoration-none em1-2 text-dark" target="_blank">
+                ضمن مطالعه دقیق قوانین سایت و با آگاهی از <span class="text-primary">قوانین</span>، از این سایت استفاده خواهم کرد.
+            </a>
+        </div>
         <div class="d-flex flex-row justify-content-center">
-            <button type="submit" class="btn btn-outline-success rounded-pill d-flex w-50 justify-content-center">ارسال</button>
+            <button type="submit" class="btn btn-outline-success rounded-pill d-flex w-50 justify-content-center">یکبار رمز را ارسال کن</button>
         </div>
     </form>
 </div>
 </div>
 {% endblock content %}
+
+
+{% block active_enter_number %}active{% endblock active_enter_number %}

@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views import generic
 from django.contrib import messages
-from django.utils.translation import gettext as _
 from django.contrib.auth import get_user_model, login, logout
 from django.db import IntegrityError, transaction
 from django.contrib.auth.hashers import make_password
@@ -25,6 +24,11 @@ class Login(generic.TemplateView):
     otps = dict()
 
     def get(self, request, *args, **kwargs):
+        rules = request.GET.get('rules')
+        print(rules)
+        if rules == None:
+            messages.error(request, "پذیرش قوانین جهت استفاده از سایت الزامیست.")
+            return redirect('enter_number')
         phone_number = request.GET.get('phone_number')
         if phone_number==None:
             messages.error(request, "لطفا شماره تلفن را وارد کنید.")
@@ -96,7 +100,7 @@ class Login(generic.TemplateView):
                 user = get_user_model().objects.create(username=phone_number)
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, "خوش آمدی %s" %phone_number)
-            return redirect('homepage')
+            return redirect('all_reminders')
         else:
             messages.error(request, "یکبار رمز به درستی وارد نشده است!")
             return redirect('enter_number')
@@ -116,3 +120,56 @@ class Logout(generic.TemplateView):
         logout(request)
         return redirect('homepage')
 
+
+class Rules(generic.TemplateView):
+    template_name = 'rules.html'
+
+
+class Email(LoginRequiredMixin, generic.TemplateView):
+    template_name = 'email.html'
+
+    def post(self, request, *args, **kwargs):
+        email:str = request.POST.get('email')
+        if email == None:
+            messages.error(request, 'لطفا آدرس ایمیل خود را وارد کنید!')
+        elif email == '':
+            messages.error(request, 'لطفا آدرس ایمیل خود را وارد کنید!')
+        else:
+            try:
+                user = self.request.user
+                user.email = email
+                user.save()
+                messages.success(request, 'آدرس ایمیل دریافت پیام برای حساب کاربری %s به %s تغییر یافت. '
+                                 'دقت کنید در صورتی که آدرس ایمیل خود را صحیح وارد نکرده باشید، پیام ها'
+                                 ' برای شما ارسال نمی شود. همچنین دقت کنید که ممکن است پیام ها'
+                                 ' به پوشه اسپم آدرس ایمیل شما ارسال شوند.' %(user, user.email))
+                return redirect('all_reminders')
+            except:
+                messages.error(request, 'لطفا آدرس ایمیل خود را به درستی وارد کنید!')
+        return render(request, 'email.html')
+
+
+class Telegram(LoginRequiredMixin, generic.TemplateView):
+    template_name = 'telegram.html'
+
+    def post(self, request, *args, **kwargs):
+        telegram_chat_id:str = request.POST.get('chat_id')
+        if telegram_chat_id == None:
+            messages.error(request, 'لطفا چت آی دی را وارد کنید!')
+        elif telegram_chat_id == '':
+            messages.error(request, 'لطفا چت آی دی را وارد کنید!')
+        else:
+            try:
+                user = self.request.user
+                user.telegram_chat_id = telegram_chat_id
+                user.save()
+                messages.success(request, 'چت آی دی تلگرامی برای حساب کاربری %s به %s تغییر یافت. '
+                                 'دقت کنید در صورتی که چت آی دی خود را صحیح وارد نکرده باشید، پیام ها'
+                                 ' برای شما ارسال نمی شود. همچنین دقت کنید که باید برای فعالسازی'
+                                 ' ربات تلگرامی، یک پیغام از طرف اکانت تلگرامی ثبت شده برای ربات'
+                                 ' تلگرامی @sbedeh_bot ارسال کنید تا ربات توانایی ارسال پیغام برای'
+                                 ' حساب کاربری شما را داشته باشد.' %(user, user.telegram_chat_id))
+                return redirect('all_reminders')
+            except:
+                messages.error(request, 'لطفا چت آی دی را با دقت وارد کنید!')
+        return render(request, 'telegram.html')

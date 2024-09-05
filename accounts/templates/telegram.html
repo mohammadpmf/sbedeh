@@ -1,0 +1,32 @@
+{% extends "_base.html" %}
+
+{% load static %}
+
+{% block page_title %}
+ثبت/تغییر اکانت تلگرام
+{% endblock page_title %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; justify-content: center; height: 95vh;">
+    <div class="container shadow-lg p-5 w justify-content-center" style="border-radius: 24px;">
+        <form action="" method="post">
+            {% csrf_token %}
+            <h1 style="text-align: center;" class="justify-content-center mb-4 c em1-8">
+                لطفا چت آی دی تلگرامی خود را وارد کنید
+            </h1>
+            <input style="text-align: center;" type="text" name="chat_id" class="form-control w-50 m-auto" id="chat_id" aria-describedby="chat_id" required {% if user.telegram_chat_id %} value="{{ user.telegram_chat_id }}" {% endif %}>
+            <div class="d-flex flex-row justify-content-center mt-3">
+                <button type="submit" class="btn btn-outline-success rounded-pill d-flex w-50 justify-content-center">ارسال</button>
+            </div>
+            <p style="text-align: justify;" class="justify-content-center my-3 c">
+                در صورت نداشتن چت آی دی تلگرامی خود، می توانید برای ربات تلگرامی @RawDataBot یک پیغام ارسال کنید.
+                در پاسخی که به شما می دهد، در قسمت بالای نام و نام خانوادگی خود (قسمت id) چت آی دی تلگرامی شما ثبت شده است.
+            </p>
+        </form>
+        <img src="{% static 'images/rawdatabot.png' %}" alt="عکس راهنمایی">
+    </div>
+</div>
+{% endblock content %}
+
+
+{% block active_telegram %}active{% endblock active_telegram %}

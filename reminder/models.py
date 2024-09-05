@@ -42,3 +42,6 @@ class Reminder(models.Model):
     whatsapp = models.BooleanField(default=False, verbose_name='واتساپ')
     eta = models.BooleanField(default=False, verbose_name='ایتا')
     bale = models.BooleanField(default=False, verbose_name='بله')
+
+    def __str__(self):
+        return self.title

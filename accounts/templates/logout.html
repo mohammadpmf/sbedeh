@@ -7,12 +7,15 @@
 {% endblock page_title %}
 
 {% block content %}
-<div class='container mt-5' style="direction: rtl">
-<h1>از خروج از حساب کاربری خود اطمینان دارید؟</h1>
+<div class='container-lg shadow mt-5 p-5' style="direction: rtl">
+<h1 class='c'>از خروج از حساب کاربری خود اطمینان دارید؟</h1>
 <form action="{% url 'logout' %}" method="post">
     {% csrf_token %}
     {{ form|crispy }}
-    <input type="submit" class="btn btn-outline-danger m-2 rounded-pill px-4" value="بله">
+    <input type="submit" class="btn btn-outline-danger m-2 mt-5 rounded-pill px-5" value="بله">
 </form>
 </div>
 {% endblock content %}
+
+
+{% block active_enter_number %}active{% endblock active_enter_number %}
