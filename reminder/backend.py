@@ -14,7 +14,13 @@ from .email_handler import send_mail
 from config.madval1369_secret import *
 
 
-MINUTE = 5
+MINUTE = 60
+REFRESH_INTERVAL_SECONDS = 60
+PROXIES = {
+    'http': 'http://your_proxy_address:port',
+    'https': 'https://your_proxy_address:port',
+}
+
 sms = ghasedakpack.Ghasedak(GHASEDAK_API_KEY)
 
 def sbedeh(phone_number, message, timeout_counter=0):
@@ -87,30 +93,29 @@ def tbedeh(chat_id, message):
 def ebedeh(email, message, timeout_counter=0):
     USERNAME = DJANGO_EMAIL_ADDRESS
     PASSWORD = DJANGO_EMAIL_APP_PASSWORD
-    print(email)
-    print(message)
     if timeout_counter<5:
         try:
-            send_mail('sbedeh.ir', [email], 'یادآوری', message, username=USERNAME, password=PASSWORD)
+            send_mail('sbedeh.ir', [email], 'یادآوری', message, server='smtp.gmail.com', username=USERNAME, password=PASSWORD)
+            send_mail('sbedeh.ir', [email], 'یادآوری', message, server='smtp.gmail.com', username=USERNAME, password=PASSWORD)
         except:
             sleep(30)
             ebedeh(email, message, timeout_counter+1)
     elif timeout_counter<10:
         try:
-            send_mail('sbedeh.ir', [email], 'یادآوری', message, username=USERNAME, password=PASSWORD)
+            send_mail('sbedeh.ir', [email], 'یادآوری', message, server='smtp.gmail.com', username=USERNAME, password=PASSWORD)
         except:
             sleep(300)
             ebedeh(email, message, timeout_counter+1)
     elif timeout_counter<12:
         try:
-            send_mail('sbedeh.ir', [email], 'یادآوری', message, username=USERNAME, password=PASSWORD)
+            send_mail('sbedeh.ir', [email], 'یادآوری', message, server='smtp.gmail.com', username=USERNAME, password=PASSWORD)
         except:
             sleep(3600)
             ebedeh(email, message, timeout_counter+1)
     elif timeout_counter==13:
         try:
             fail_message = 'متاسفانه به دلیل نامشخصی، ارسال یادآوری به شما مشکل داشت. چندین بار سعی کردیم ایمیل با یادآوری مشخصی که تعیین کرده بودید را برایتان ارسال کنیم. اما متاسفانه پس از ۱۲ بار تلاش کردن در طی ۳ ساعت موفق به ارسال یادآوری شما نشدیم. این ایمیل جداگانه برای شما ارسال شده است جهت این که از طریق سایت sbedeh.ir یادآوری های خود را بازبینی کنید.\nموفق باشید.\nsbedeh.ir'
-            send_mail('sbedeh.ir', [email], 'یادآوری', fail_message, username=USERNAME, password=PASSWORD)
+            send_mail('sbedeh.ir', [email], 'یادآوری', fail_message, server='smtp.gmail.com', username=USERNAME, password=PASSWORD)
         except:
             pass
 
@@ -118,10 +123,10 @@ def ebedeh(email, message, timeout_counter=0):
 def handle_reminder(reminder: Reminder):
     phone_number = reminder.user
     message = reminder.title
-    # if reminder.sms:
-    #     Thread(target=sbedeh, args=(phone_number, message+'\nلغو ۱۱'), daemon=True).start()
-    # if reminder.telegram: # فیلتر شکن باید روشن باشه
-    #     Thread(target=tbedeh, args=(reminder.user.telegram_chat_id, message), daemon=True).start()
+    if reminder.sms:
+        Thread(target=sbedeh, args=(phone_number, message+'\nلغو ۱۱'), daemon=True).start()
+    if reminder.telegram: # فیلتر شکن باید روشن باشه
+        Thread(target=tbedeh, args=(reminder.user.telegram_chat_id, message), daemon=True).start()
     if reminder.email:
         Thread(target=ebedeh, args=(reminder.user.email, message), daemon=True).start()
         
@@ -197,7 +202,7 @@ def send_sms_to_people():
         if should_check(now, reminder.start_datetime):
             if should_i(now, reminder.start_datetime, reminder.period):
                 handle_reminder(reminder)
-    sleep(MINUTE)
+    sleep(REFRESH_INTERVAL_SECONDS)
     send_sms_to_people()
 
 
