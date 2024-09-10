@@ -1,0 +1,26 @@
+@keyframes slide-down-and-up {
+    0%{
+        top: -100vh;
+    }
+    8%{
+        top: 5vh;
+    }
+    92%{
+        top: 5vh;
+    }
+    100%{
+        top: -100vh;
+    }
+}
+.madval-messages{
+    display: block;
+    position: fixed;
+    top: -100vh;
+    right: 15vw;
+    left: 15vw;
+    overflow: auto;
+    direction: rtl;
+    font-family: Calibri;
+    z-index: 10000 !important;
+    animation: slide-down-and-up 10s forwards;
+}
