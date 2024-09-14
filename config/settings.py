@@ -34,7 +34,7 @@ SECRET_KEY = DJANGO_SECRET_KEY
 DEBUG = env('DJANGO_DEBUG')
 DEBUG = DJANGO_DEBUG
 
-ALLOWED_HOSTS = ['codefather1369.ir', 'www.codefather1369.ir', '*']
+ALLOWED_HOSTS = ['sbedeh.ir', 'www.sbedeh.ir', '*']
 
 
 # Application definition
