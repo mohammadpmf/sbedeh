@@ -2,12 +2,13 @@ from django.contrib.auth import get_user_model
 
 from threading import Thread
 from time import sleep
-from datetime import datetime, timezone
+from datetime import datetime
 
 from requests.exceptions import ConnectTimeout, SSLError
 import ghasedakpack
 import telebot
 import requests
+import pytz
 
 from .models import Reminder
 from .email_handler import send_mail
@@ -33,8 +34,11 @@ def send_s():
 
 def send_t():
     try:
+        now_utc = datetime.now(pytz.utc)
+        iran_tz = pytz.timezone('Asia/Tehran')
+        now_iran = now_utc.astimezone(iran_tz)
         bot = telebot.TeleBot(MY_TELEGRAM_BOT_API_TOKEN)
-        bot.send_message('84047486', 'تست روی سرور تلگرام')
+        bot.send_message('84047486', now_iran)
         print('message sent successfully to', '84047486')
     except:
         print('nashod t bedam.')
@@ -222,11 +226,13 @@ def should_i(now: datetime, start_datetime: datetime, period: str):
 
 
 def send_sms_to_people():
-    now = datetime.now().replace(tzinfo=timezone.utc)
+    now_utc = datetime.now(pytz.utc)
+    iran_tz = pytz.timezone('Asia/Tehran')
+    now_iran = now_utc.astimezone(iran_tz)
     reminders = Reminder.objects.filter(active=True).select_related('user')
     for reminder in reminders:
-        if should_check(now, reminder.start_datetime):
-            if should_i(now, reminder.start_datetime, reminder.period):
+        if should_check(now_iran, reminder.start_datetime):
+            if should_i(now_iran, reminder.start_datetime, reminder.period):
                 handle_reminder(reminder)
     sleep(REFRESH_INTERVAL_SECONDS)
     send_sms_to_people()
