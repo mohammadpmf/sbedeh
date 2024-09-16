@@ -16,7 +16,6 @@ from environs import Env
 
 env = Env()
 env.read_env()
-from .madval1369_secret import *
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,14 +26,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('DJANGO_SECRET_KEY')
-SECRET_KEY = DJANGO_SECRET_KEY
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DJANGO_DEBUG')
-DEBUG = DJANGO_DEBUG
+DEBUG = True if env('DJANGO_DEBUG')=='True' else False
 
-ALLOWED_HOSTS = ['sbedeh.ir', 'www.sbedeh.ir', '*']
+ALLOWED_HOSTS = ['sbedeh.ir', 'www.sbedeh.ir', 'codefather1369.ir', 'www.codefather1369.ir', '127.0.0.1']
 
 
 # Application definition
@@ -103,15 +100,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': env('DATABASE_NAME'),
-        'NAME': DATABASE_NAME,
         'USER': env('DATABASE_USER'),
-        'USER': DATABASE_USER,
         'PASSWORD': env('DATABASE_PASSWORD'),
-        'PASSWORD': DATABASE_PASSWORD,
         'HOST': env('DATABASE_HOST'),
-        'HOST': DATABASE_HOST,
         'PORT': env('DATABASE_PORT'),
-        'PORT': DATABASE_PORT,
     }
 }
 

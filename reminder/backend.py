@@ -1,5 +1,3 @@
-from django.contrib.auth import get_user_model
-
 from threading import Thread
 from time import sleep
 from datetime import datetime
@@ -12,22 +10,20 @@ import pytz
 
 from .models import Reminder
 from .email_handler import send_mail
-from config.madval1369_secret import *
 
+from environs import Env
+
+env = Env()
+env.read_env()
 
 MINUTE = 60
 REFRESH_INTERVAL_SECONDS = 60
-PROXIES = {
-    'http': 'http://your_proxy_address:port',
-    'https': 'https://your_proxy_address:port',
-}
-
-sms = ghasedakpack.Ghasedak(GHASEDAK_API_KEY)
+sms = ghasedakpack.Ghasedak(env('GHASEDAK_API_KEY'))
 
 
 def send_s():
     try:
-        sms.send({'message': 'تست روی سرور. لغو۱۱', 'receptor' : '09198004498', 'linenumber': MY_LINE_NUMBER_ON_GHASEDAK_1})
+        sms.send({'message': 'تست روی سرور. لغو۱۱', 'receptor' : '09198004498', 'linenumber': env('MY_LINE_NUMBER_ON_GHASEDAK_1')})
     except:
         print('nashod s bedam.')
 
@@ -37,7 +33,7 @@ def send_t():
         now_utc = datetime.now(pytz.utc)
         iran_tz = pytz.timezone('Asia/Tehran')
         now_iran = now_utc.astimezone(iran_tz)
-        bot = telebot.TeleBot(MY_TELEGRAM_BOT_API_TOKEN)
+        bot = telebot.TeleBot(env('MY_TELEGRAM_BOT_API_TOKEN'))
         bot.send_message('84047486', now_iran)
         print('message sent successfully to', '84047486')
     except:
@@ -46,12 +42,12 @@ def send_t():
 
 def send_e():
     try:
-        USERNAME = DJANGO_EMAIL_ADDRESS
-        PASSWORD = DJANGO_EMAIL_APP_PASSWORD
+        USERNAME = env('DJANGO_EMAIL_ADDRESS')
+        PASSWORD = env('DJANGO_EMAIL_APP_PASSWORD')
         send_mail('sbedeh.ir', ['mohammad.pfallah@gmail.com'], 'تست ایمیل سرور', 'تست ایمیل سرور', server='smtp.gmail.com', username=USERNAME, password=PASSWORD)
     except:
         print('nashod e bedam.')
-    
+
 
 def sbedeh(phone_number, message, timeout_counter=0):
     if timeout_counter>=3:
@@ -60,46 +56,46 @@ def sbedeh(phone_number, message, timeout_counter=0):
             'متاسفانه در ارسال یکی از یادآوری های شما مشکلی رخ داده است.'\
             ' پس از ۳ بار تلاش، با مشکل مواجه شدیم. لطفاً به حساب کاربری خود مراجعه کنید تا یادآوری مربوطه '\
             'از خاطرتان نرود. با تشکر.\nلغو۱۱'
-            answer = sms.send({'message': error_message, 'receptor' : phone_number, 'linenumber': MY_LINE_NUMBER_ON_GHASEDAK_1})
+            answer = sms.send({'message': error_message, 'receptor' : phone_number, 'linenumber': env('MY_LINE_NUMBER_ON_GHASEDAK_1')})
             if answer:
                 return
             else:
-                answer = sms.send({'message': error_message, 'receptor' : phone_number, 'linenumber': MY_LINE_NUMBER_ON_GHASEDAK_2})
+                answer = sms.send({'message': error_message, 'receptor' : phone_number, 'linenumber': env('MY_LINE_NUMBER_ON_GHASEDAK_2')})
                 if answer:
                     return
                 # نشد باید ببینم دیگه چه میشه کرد.
         except:
-            answer = sms.send({'message': error_message, 'receptor' : phone_number, 'linenumber': MY_LINE_NUMBER_ON_GHASEDAK_2})
+            answer = sms.send({'message': error_message, 'receptor' : phone_number, 'linenumber': env('MY_LINE_NUMBER_ON_GHASEDAK_2')})
             if answer:
                 return
             # نشد باید ببینم دیگه چه میشه کرد.
         return
     try:
-        answer = sms.send({'message': message, 'receptor' : phone_number, 'linenumber': MY_LINE_NUMBER_ON_GHASEDAK_1})
+        answer = sms.send({'message': message, 'receptor' : phone_number, 'linenumber': env('MY_LINE_NUMBER_ON_GHASEDAK_1')})
         if answer:
             # yey 😊
             return
         else:
-            answer = sms.send({'message': message, 'receptor' : phone_number, 'linenumber': MY_LINE_NUMBER_ON_GHASEDAK_2})
+            answer = sms.send({'message': message, 'receptor' : phone_number, 'linenumber': env('MY_LINE_NUMBER_ON_GHASEDAK_2')})
             if answer:
                 # yey 😁
                 return
             sleep((timeout_counter+1)*MINUTE)
             sbedeh(phone_number, message, timeout_counter+1)
     except ConnectTimeout as error:
-        answer = sms.send({'message': message, 'receptor' : phone_number, 'linenumber': MY_LINE_NUMBER_ON_GHASEDAK_2})
+        answer = sms.send({'message': message, 'receptor' : phone_number, 'linenumber': env('MY_LINE_NUMBER_ON_GHASEDAK_2')})
         if answer:
             return
         sleep((timeout_counter+1)*MINUTE)
         sbedeh(phone_number, message, timeout_counter+1)
     except SSLError as error:
-        answer = sms.send({'message': message, 'receptor' : phone_number, 'linenumber': MY_LINE_NUMBER_ON_GHASEDAK_2})
+        answer = sms.send({'message': message, 'receptor' : phone_number, 'linenumber': env('MY_LINE_NUMBER_ON_GHASEDAK_2')})
         if answer:
             return
         sleep((timeout_counter+1)*MINUTE)
         sbedeh(phone_number, message, timeout_counter+1)
     except ConnectionError as error:
-        answer = sms.send({'message': message, 'receptor' : phone_number, 'linenumber': MY_LINE_NUMBER_ON_GHASEDAK_2})
+        answer = sms.send({'message': message, 'receptor' : phone_number, 'linenumber': env('MY_LINE_NUMBER_ON_GHASEDAK_2')})
         if answer:
             return
         sleep((timeout_counter+1)*MINUTE)
@@ -108,7 +104,7 @@ def sbedeh(phone_number, message, timeout_counter=0):
 
 def tbedeh(chat_id, message):
     try:
-        bot = telebot.TeleBot(MY_TELEGRAM_BOT_API_TOKEN)
+        bot = telebot.TeleBot(env('MY_TELEGRAM_BOT_API_TOKEN'))
         bot.send_message(chat_id, message)
         print('message sent successfully to', chat_id)
     except telebot.apihelper.ApiTelegramException as error:
@@ -121,8 +117,8 @@ def tbedeh(chat_id, message):
 
 
 def ebedeh(email, message, timeout_counter=0):
-    USERNAME = DJANGO_EMAIL_ADDRESS
-    PASSWORD = DJANGO_EMAIL_APP_PASSWORD
+    USERNAME = env('DJANGO_EMAIL_ADDRESS')
+    PASSWORD = env('DJANGO_EMAIL_APP_PASSWORD')
     if timeout_counter<5:
         try:
             send_mail('sbedeh.ir', [email], 'یادآوری', message, server='smtp.gmail.com', username=USERNAME, password=PASSWORD)
@@ -226,71 +222,16 @@ def should_i(now: datetime, start_datetime: datetime, period: str):
 
 
 def send_sms_to_people():
-    now_utc = datetime.now(pytz.utc)
-    iran_tz = pytz.timezone('Asia/Tehran')
-    now_iran = now_utc.astimezone(iran_tz)
-    reminders = Reminder.objects.filter(active=True).select_related('user')
-    for reminder in reminders:
-        if should_check(now_iran, reminder.start_datetime):
-            if should_i(now_iran, reminder.start_datetime, reminder.period):
-                handle_reminder(reminder)
-    sleep(REFRESH_INTERVAL_SECONDS)
-    send_sms_to_people()
-
-
-# با فیلترشکن کار میکنه.
-def activate_telegram_bot():
-    global bot
-    bot = telebot.TeleBot(MY_TELEGRAM_BOT_API_TOKEN)
-
-    @bot.message_handler(commands=['start', 'help', 'ok']) # لیست دستوراتی که با اسلش کار میکنند. /start /help /ok
-    def send_start(message):
-        bot.reply_to(message, "به ربات تلگرامی سایت sbedeh.ir خوش آمدید🌺\n"
-                    "برای ذخیره شدن حساب کاربری خود جهت دریافت پیام از طریق تلگرام، ابتدا شماره "
-                    "ثبت نامی خود و سپس چت آی دی تلگرام خود را با یک فاصله از هم وارد کنید.\n"
-                    "به طور مثال 09123456789 35682496\n"
-        "(دقت کنید در صورت ارسال اشتباه چت آی دی، پیام ها برای شما ارسال نمی شوند.)")
-
-
-    @bot.message_handler(func=lambda message: True) # لیست دستوراتی که مستقیم در چت مینویسیم.
-    def handle_message(message):
-        text:str = message.text.lower()
-        if text==None:
-            bot.reply_to(message, "لطفا شماره ثبت نامی خود و چت آی دی تلگرام خود را با یک فاصله از هم وارد کنید.")
-            return
-        two_texts = text.split(' ')
-        if len(two_texts)<2:
-            bot.reply_to(message, "فرمت خواسته شده را رعایت نکردید. لطفا شماره ثبت نامی خود "
-                         "و چت آی دی تلگرام خود را با یک فاصله از هم وارد کنید. (شما هیچ فاصله ای "
-                         "وارد نکرده‌اید!)")
-            return
-        if len(two_texts)>2:
-            bot.reply_to(message, "فرمت خواسته شده را رعایت نکردید. لطفا شماره ثبت نامی خود "
-                         "و چت آی دی تلگرام خود را با یک فاصله از هم وارد کنید. (شما بیش از یک فاصله "
-                         "وارد کرده‌اید!)")
-            return
-        number, chat_id = two_texts[0].strip(), two_texts[1].strip()
-        if not number.startswith('09'):
-            bot.reply_to(message, "شماره با 09 آغاز نشده است!")
-        elif len(number)!=11:
-            bot.reply_to(message, "شماره باید ۱۱ رقمی باشد و با 09 آغاز شود!")
-        elif not number.isdigit():
-            bot.reply_to(message, "در قسمتی از شماره تلفن، کاراکتری وجود دارد که عدد نیست. شماره باید ۱۱ رقمی و با کیبورد انگلیسی وارد شود و با 09 آغاز شود!")
-        elif not chat_id.isdigit():
-            bot.reply_to(message, "در قسمتی از چت آی دی، کاراکتری وجود دارد که عدد نیست. چت آی دی باید با کیبورد انگلیسی وارد شود!")
-        else:
-            user = get_user_model().objects.filter(username=number).first()
-            if not user:
-                bot.reply_to(message, "شماره ارسالی در سایت پیدا نشد. جهت استفاده از این ربات ابتدا باید با شماره ای که ارسال کردید در سایت www.sbedeh.ir ثبت نام کنید.")
-            else:
-                user.telegram_chat_id=chat_id
-                user.save()
-                bot.reply_to(message, "شماره شما (%s) در سایت پیدا شد و جهت دریافت پیام از "
-                            "چت آی دی تلگرامی ارسال شده (%s) استفاده خواهد شد.\n"
-                            "در صورت نیاز به تغییر شماره تلگرامی که پیام ها را دریافت کند، "
-                            "می توانید از حساب کاربری مورد نظر به این ربات پیام ارسال کنید و با وارد کردن "
-                            "مجدد شماره و چت آی دی خود، اکانتی که پیام را دریافت می کند بروزرسانی کنید.\n"
-                            "با تشکر\n www.sbedeh.ir" %(number, chat_id))
-    bot.infinity_polling()
-
-Thread(target=send_sms_to_people, daemon=True).start()
+    while True:
+        bot = telebot.TeleBot(env('MY_TELEGRAM_BOT_API_TOKEN'))
+        now_utc = datetime.now(pytz.utc)
+        iran_tz = pytz.timezone('Asia/Tehran')
+        now_iran = now_utc.astimezone(iran_tz)
+        bot.send_message('84047486', now_iran)
+        reminders = Reminder.objects.filter(active=True).select_related('user')
+        for reminder in reminders:
+            if should_check(now_iran, reminder.start_datetime):
+                if should_i(now_iran, reminder.start_datetime, reminder.period):
+                    handle_reminder(reminder)
+                # bot.send_message('84047486', reminder.start_datetime)
+        sleep(REFRESH_INTERVAL_SECONDS)

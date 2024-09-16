@@ -8,11 +8,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from requests.exceptions import ConnectTimeout, SSLError
 import ghasedakpack
 import random, string, time, threading
+from django.conf import settings
 
-from config.madval1369_secret import *
+from environs import Env
 
+env = Env()
+env.read_env()
 
-sms = ghasedakpack.Ghasedak(GHASEDAK_API_KEY)
+sms = ghasedakpack.Ghasedak(env('GHASEDAK_API_KEY'))
 good_line_number_for_sending_otp = '30005088' # مال خودم رو که میذارم، شانسی از این شماره یا 20008580 میفرسته که شماره ۳۰۰۰ اوکی هست. ولی ۲۰۰۰ داغانه یه بار تقریبا ۲۰ دقیقه طول کشید تا بفرسته که خب دیگه یکبار رمز به درد بخوری نیست.
 
 
@@ -25,7 +28,6 @@ class Login(generic.TemplateView):
 
     def get(self, request, *args, **kwargs):
         rules = request.GET.get('rules')
-        print(rules)
         if rules == None:
             messages.error(request, "پذیرش قوانین جهت استفاده از سایت الزامیست.")
             return redirect('enter_number')
@@ -49,14 +51,19 @@ class Login(generic.TemplateView):
         else:
             otp_type = request.GET.get('otp_type')
             otp = str(random.randint(100000, 999999))
-            messages.success(request, f"یکبار رمز {otp}")
+            if settings.DEBUG:
+                messages.success(request, f"یکبار رمز {otp}")
             Login.otps[phone_number]=otp
             try:
-                # if otp_type=="sms":
-                #     answer = sms.verification({'receptor': phone_number, 'linenumber': good_line_number_for_sending_otp,'type': '1', 'template': MY_TEMPLATE_NAME_IN_GHASEDAK_ME_SITE, 'param1': otp})
-                # elif otp_type=="voice":
-                #     answer = sms.verification({'receptor': phone_number, 'type': '2', 'template': MY_TEMPLATE_NAME_IN_GHASEDAK_ME_SITE_WITH_VOICE, 'param1': otp})
-                answer = True
+                if settings.DEBUG:
+                    answer = True
+                else:
+                    if otp_type=="sms":
+                        answer = sms.verification({'receptor': phone_number, 'linenumber': good_line_number_for_sending_otp,'type': '1', 'template': env('MY_TEMPLATE_NAME_IN_GHASEDAK_ME_SITE'), 'param1': otp})
+                    elif otp_type=="voice":
+                        answer = sms.verification({'receptor': phone_number, 'type': '2', 'template': env('MY_TEMPLATE_NAME_IN_GHASEDAK_ME_SITE_WITH_VOICE'), 'param1': otp})
+                    else:
+                        answer = False
                 if answer:
                     messages.success(request, "یکباررمز با موفقیت به شماره %s ارسال شد." %phone_number)
                     return render(request, 'login.html', {'phone_number': phone_number})
@@ -84,7 +91,6 @@ class Login(generic.TemplateView):
     def post(self, request, *args, **kwargs):
         phone_number = request.POST.get('phone_number')
         sent_otp = request.POST.get('otp')
-        print(phone_number, sent_otp, type(phone_number), type(sent_otp))
         otps = Login.otps
         correct_otp = otps.get(phone_number)
         if correct_otp == None: # یعنی یا منقضی شده و یا طرف دستکاری کرده فرم رو با اچ تی ام ال
