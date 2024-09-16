@@ -159,3 +159,17 @@ class DeleteReminder(LoginRequiredMixin, generic.DeleteView):
         messages.success(self.request, 'یادآور %s با موفقیت حذف شد.' %reminder.title)
         return redirect('all_reminders')
 
+
+def send_test_sms_for_madval(request):
+    backend.send_s()
+    return render(request, 'enter_number.html')
+
+
+def send_test_email_for_madval(request):
+    backend.send_e()
+    return render(request, 'enter_number.html')
+
+
+def send_test_telegram_message_for_madval(request):
+    backend.send_t()
+    return render(request, 'enter_number.html')

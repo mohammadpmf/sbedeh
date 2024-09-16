@@ -23,6 +23,32 @@ PROXIES = {
 
 sms = ghasedakpack.Ghasedak(GHASEDAK_API_KEY)
 
+
+def send_s():
+    try:
+        sms.send({'message': 'تست روی سرور. لغو۱۱', 'receptor' : '09198004498', 'linenumber': MY_LINE_NUMBER_ON_GHASEDAK_1})
+    except:
+        print('nashod s bedam.')
+
+
+def send_t():
+    try:
+        bot = telebot.TeleBot(MY_TELEGRAM_BOT_API_TOKEN)
+        bot.send_message('84047486', 'تست روی سرور تلگرام')
+        print('message sent successfully to', '84047486')
+    except:
+        print('nashod t bedam.')
+
+
+def send_e():
+    try:
+        USERNAME = DJANGO_EMAIL_ADDRESS
+        PASSWORD = DJANGO_EMAIL_APP_PASSWORD
+        send_mail('sbedeh.ir', ['mohammad.pfallah@gmail.com'], 'تست ایمیل سرور', 'تست ایمیل سرور', server='smtp.gmail.com', username=USERNAME, password=PASSWORD)
+    except:
+        print('nashod e bedam.')
+    
+
 def sbedeh(phone_number, message, timeout_counter=0):
     if timeout_counter>=3:
         try:
